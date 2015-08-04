@@ -4,6 +4,7 @@ package flow
 import (
 	"reflect"
 	"sync"
+	"fmt"
 )
 
 const (
@@ -130,10 +131,12 @@ func RunProc(c interface{}) bool {
 
 	// Iterate over struct fields and bind handlers
 	inputCount := 0
+	compName := "noname"
 	for i := 0; i < t.NumField(); i++ {
 		fv := v.Field(i)
 		ff := t.Field(i)
 		ft := fv.Type()
+		compName = ff.Name
 		// Detect control channels
 		if fv.IsValid() && fv.Kind() == reflect.Chan && !fv.IsNil() && (ft.ChanDir()&reflect.RecvDir) != 0 {
 			// Bind handlers for an input channel
@@ -149,7 +152,7 @@ func RunProc(c interface{}) bool {
 	}
 
 	if inputCount == 0 && !isLooper {
-		panic("Components with no input ports are not supported")
+		panic(fmt.Sprintf("Components with no input ports are not supported:%s",compName))
 	}
 
 	// Prepare handler closures
