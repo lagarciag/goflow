@@ -17,13 +17,13 @@ Current version of the library requires a latest stable Go release. If you don't
 Use go tool to install the package in your packages tree:
 
 ```
-go get github.com/trustmaster/goflow
+go get github.com/lagarciag/goflow
 ```
 
 Then you can use it in import section of your Go programs:
 
 ```go
-import "github.com/trustmaster/goflow"
+import "github.com/lagarciag/goflow"
 ```
 
 ## Basic Example
@@ -39,7 +39,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/trustmaster/goflow"
+	"github.com/lagarciag/goflow"
 )
 
 // A component that generates greetings
@@ -126,27 +126,27 @@ More terms can be found in [flowbased terms](http://flowbased.org/terms) and [FB
 
 ### Contents
 
-1. [Components](https://github.com/trustmaster/goflow/wiki/Components)
-    1. [Ports, Events and Handlers](https://github.com/trustmaster/goflow/wiki/Components#ports-events-and-handlers)
-    2. [Processes and their lifetime](https://github.com/trustmaster/goflow/wiki/Components#processes-and-their-lifetime)
-    3. [State](https://github.com/trustmaster/goflow/wiki/Components#state)
-    4. [Concurrency](https://github.com/trustmaster/goflow/wiki/Components#concurrency)
-    5. [Internal state and Thread-safety](https://github.com/trustmaster/goflow/wiki/Components#internal-state-and-thread-safety)
-2. [Graphs](https://github.com/trustmaster/goflow/wiki/Graphs)
-    1. [Structure definition](https://github.com/trustmaster/goflow/wiki/Graphs#structure-definition)
-    2. [Behavior](https://github.com/trustmaster/goflow/wiki/Graphs#behavior)
+1. [Components](https://github.com/lagarciag/goflow/wiki/Components)
+    1. [Ports, Events and Handlers](https://github.com/lagarciag/goflow/wiki/Components#ports-events-and-handlers)
+    2. [Processes and their lifetime](https://github.com/lagarciag/goflow/wiki/Components#processes-and-their-lifetime)
+    3. [State](https://github.com/lagarciag/goflow/wiki/Components#state)
+    4. [Concurrency](https://github.com/lagarciag/goflow/wiki/Components#concurrency)
+    5. [Internal state and Thread-safety](https://github.com/lagarciag/goflow/wiki/Components#internal-state-and-thread-safety)
+2. [Graphs](https://github.com/lagarciag/goflow/wiki/Graphs)
+    1. [Structure definition](https://github.com/lagarciag/goflow/wiki/Graphs#structure-definition)
+    2. [Behavior](https://github.com/lagarciag/goflow/wiki/Graphs#behavior)
 
 ### Package docs
 
 Documentation for the flow package can be accessed using standard godoc tool, e.g.
 
 ```
-godoc github.com/trustmaster/goflow
+godoc github.com/lagarciag/goflow
 ```
 
 ## More examples
 
-* [GoChat](https://github.com/trustmaster/gochat), a simple chat in Go using this library
+* [GoChat](https://github.com/lagarciag/gochat), a simple chat in Go using this library
 
 ## Links
 
