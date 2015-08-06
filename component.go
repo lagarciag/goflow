@@ -69,6 +69,7 @@ type portHandler struct {
 // It returns true on success or panics with error message and returns false on error.
 func RunProc(c interface{}) bool {
 	// Check if passed interface is a valid pointer to struct
+	name := reflect.TypeOf(c)
 	v := reflect.ValueOf(c)
 	if v.Kind() != reflect.Ptr || v.IsNil() {
 		panic("Argument of flow.Run() is not a valid pointer")
@@ -103,6 +104,7 @@ func RunProc(c interface{}) bool {
 	vCom := v.FieldByName("Component")
 	isComponent := vCom.IsValid() && vCom.Type().Name() == "Component"
 
+
 	if !isComponent {
 		panic("Argument of flow.Run() is not a flow.Component")
 	}
@@ -131,14 +133,12 @@ func RunProc(c interface{}) bool {
 
 	// Iterate over struct fields and bind handlers
 	inputCount := 0
-	portName := "noname"
-	compName := "noname"
+
 	for i := 0; i < t.NumField(); i++ {
 		fv := v.Field(i)
 		ff := t.Field(i)
 		ft := fv.Type()
-		portName = ff.Name
-		compName = ff.PkgPath
+
 		// Detect control channels
 		if fv.IsValid() && fv.Kind() == reflect.Chan && !fv.IsNil() && (ft.ChanDir()&reflect.RecvDir) != 0 {
 			// Bind handlers for an input channel
@@ -154,7 +154,7 @@ func RunProc(c interface{}) bool {
 	}
 
 	if inputCount == 0 && !isLooper {
-		panic(fmt.Sprintf("Components with no input ports are not supported:%s,%s",compName,portName))
+		panic(fmt.Sprintf("Components with no input ports are not supported:%s",name))
 	}
 
 	// Prepare handler closures

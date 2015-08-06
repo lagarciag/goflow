@@ -3,6 +3,8 @@ package flow
 import (
 	"reflect"
 	"sync"
+	"fmt"
+	//"github.com/revel/revel"
 )
 
 // DefaultBufferSize is the default channel buffer capacity.
@@ -346,13 +348,22 @@ func (n *Graph) ConnectBuf(senderName, senderPort, receiverName, receiverPort st
 	}
 
 	// Validate receiver port
+	if(!rport.IsValid()) {
+		panic(fmt.Sprintf("Reciever port:%s, from process %s, is invalid.  Driver is %s, port %s",receiverPort,receiverName,senderName,senderPort))
+	}
+	//fmt.Println("Ports",senderName,senderPort,"-->",receiverName,receiverPort,rport)
+
 	rtport := rport.Type()
+
 	if rtport.Kind() != reflect.Chan || rtport.ChanDir()&reflect.RecvDir == 0 {
 		panic(receiverName + "." + receiverPort + " is not a valid input channel")
 		return false
 	}
 
 	// Validate sender port
+	if(!sport.IsValid()) {
+		panic(fmt.Sprintf("Sender port:%s, from process %s, is invalid.  Driver is %s, port %s",senderPort,senderName,receiverName,receiverPort))
+	}
 	stport := sport.Type()
 	var channel reflect.Value
 	if !rport.IsNil() {
@@ -382,7 +393,7 @@ func (n *Graph) ConnectBuf(senderName, senderPort, receiverName, receiverPort st
 			//go does not allow cast of unidir chan to bidir chan (for good reason)
 			//but luckily we saved it, so we look it up
 			if channel.IsValid() && sport.Addr() != rport.Addr() {
-				panic("Trying to connect an already connected source to an already connected target")
+				panic(fmt.Sprintf("Trying to connect an already connected source (%s:%s) to an already connected target (%s:%s",senderName,senderPort,receiverName,receiverPort))
 			}
 			for _, mycon := range n.connections {
 				if mycon.src.port == senderPort && mycon.src.proc == senderName {
