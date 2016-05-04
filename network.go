@@ -86,6 +86,8 @@ type Graph struct {
 	connections []connection
 	// sendChanRefCount tracks how many sendports use the same channel
 	sendChanRefCount map[uintptr]uint
+	// sendChanMutex is used to synchronize operations on the sendChanRefCount map.
+	sendChanMutex sync.Locker
 	// iips contains initial IPs attached to the network
 	iips []iip
 	// done is used to let the outside world know when the net has finished its job
@@ -104,6 +106,7 @@ func (n *Graph) InitGraphState() {
 	n.outPorts = make(map[string]port, DefaultNetworkPortsNum)
 	n.connections = make([]connection, 0, DefaultNetworkCapacity)
 	n.sendChanRefCount = make(map[uintptr]uint, DefaultNetworkCapacity)
+	n.sendChanMutex = new(sync.Mutex)
 	n.iips = make([]iip, 0, DefaultNetworkPortsNum)
 	n.done = make(chan struct{})
 	n.ready = make(chan struct{})
@@ -133,6 +136,9 @@ func init() {
 
 // Increments SendChanRefCount
 func (n *Graph) IncSendChanRefCount(c reflect.Value) {
+	n.sendChanMutex.Lock()
+	defer n.sendChanMutex.Unlock()
+
 	ptr := c.Pointer()
 	cnt := n.sendChanRefCount[ptr]
 	cnt += 1
@@ -142,6 +148,9 @@ func (n *Graph) IncSendChanRefCount(c reflect.Value) {
 // Decrements SendChanRefCount
 // It returns true if the RefCount has reached 0
 func (n *Graph) DecSendChanRefCount(c reflect.Value) bool {
+	n.sendChanMutex.Lock()
+	defer n.sendChanMutex.Unlock()
+
 	ptr := c.Pointer()
 	cnt := n.sendChanRefCount[ptr]
 	if cnt == 0 {
