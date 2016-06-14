@@ -96,11 +96,14 @@ type Graph struct {
 	ready chan struct{}
 	// isRunning indicates that the network is currently running
 	isRunning bool
+
+	sync *sync.Mutex
 }
 
 // InitGraphState method initializes graph fields and allocates memory.
 func (n *Graph) InitGraphState() {
 	n.waitGrp = new(sync.WaitGroup)
+	n.sync = &sync.Mutex{}
 	n.procs = make(map[string]interface{}, DefaultNetworkCapacity)
 	n.inPorts = make(map[string]port, DefaultNetworkPortsNum)
 	n.outPorts = make(map[string]port, DefaultNetworkPortsNum)
@@ -217,6 +220,7 @@ func (n *Graph) Remove(processName string) bool {
 	}
 	// TODO disconnect before removal
 	delete(n.procs, processName)
+	fmt.Println("Deleting process:",processName)
 	return true
 }
 
@@ -834,6 +838,7 @@ func (n *Graph) Wait() <-chan struct{} {
 // SetInPort assigns a channel to a network's inport to talk to the outer world.
 // It returns true on success or false if the inport cannot be set.
 func (n *Graph) SetInPort(name string, channel interface{}) bool {
+
 	res := false
 	// Get the component's inport associated
 	p := n.getInPort(name)
@@ -876,6 +881,7 @@ func (n *Graph) UnsetInPort(name string) bool {
 // SetOutPort assigns a channel to a network's outport to talk to the outer world.
 // It returns true on success or false if the outport cannot be set.
 func (n *Graph) SetOutPort(name string, channel interface{}) bool {
+	n.sync.Lock()
 	res := false
 	// Get the component's outport associated
 	p := n.getOutPort(name)
@@ -889,6 +895,7 @@ func (n *Graph) SetOutPort(name string, channel interface{}) bool {
 		p.channel = reflect.ValueOf(channel)
 		n.outPorts[name] = p
 	}
+	n.sync.Unlock()
 	return res
 }
 
